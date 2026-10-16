@@ -1,0 +1,2269 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Masters - 3rd Grade Number Sense Suite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .title-font { font-family: 'Fredoka One', cursive; }
+        
+        .game-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .game-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .bounce-in {
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-anim { animation: float 3s ease-in-out infinite; }
+        .pulse-anim { animation: pulse 2s ease-in-out infinite; }
+        .shake-anim { animation: shake 0.5s ease-in-out; }
+        .slide-up { animation: slideUp 0.5s ease-out; }
+        
+        .correct-flash {
+            animation: correctFlash 0.5s ease;
+        }
+        @keyframes correctFlash {
+            0% { background-color: #10b981; }
+            100% { background-color: transparent; }
+        }
+        
+        .wrong-flash {
+            animation: wrongFlash 0.5s ease;
+        }
+        @keyframes wrongFlash {
+            0% { background-color: #ef4444; }
+            100% { background-color: transparent; }
+        }
+        
+        .number-line {
+            position: relative;
+            height: 4px;
+            background: #374151;
+            margin: 60px 20px;
+            border-radius: 2px;
+        }
+        
+        .number-line-tick {
+            position: absolute;
+            width: 2px;
+            height: 16px;
+            background: #374151;
+            top: -6px;
+        }
+        
+        .number-line-label {
+            position: absolute;
+            top: 20px;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+        }
+        
+        .draggable-number {
+            cursor: grab;
+            user-select: none;
+            transition: all 0.2s;
+        }
+        .draggable-number:active { cursor: grabbing; }
+        
+        .star { color: #fbbf24; }
+        .star-empty { color: #d1d5db; }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .tally-mark {
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: #1f2937;
+            margin: 0 2px;
+            border-radius: 1px;
+        }
+        .tally-mark.fifth {
+            transform: rotate(-30deg) translateY(5px);
+            width: 30px;
+            height: 4px;
+            margin: 0 -14px;
+        }
+        
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: confettiFall 3s ease-out forwards;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        .tooltip::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .tooltip:hover::after { opacity: 1; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            transition: all 0.2s;
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            transition: all 0.2s;
+        }
+        
+        .level-badge {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 9999px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .comparison-symbol {
+            font-size: 3rem;
+            font-weight: 800;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 3px solid transparent;
+        }
+        .comparison-symbol:hover {
+            transform: scale(1.1);
+        }
+        .comparison-symbol.selected {
+            border-color: #6366f1;
+            background: #eef2ff;
+        }
+        
+        .tab-btn {
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            border-bottom-color: #6366f1;
+            color: #6366f1;
+        }
+        
+        @media (max-width: 640px) {
+            .comparison-symbol { font-size: 2rem; width: 48px; height: 48px; }
+        }
+        
+        .teacher-panel {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+        }
+        
+        .printable { display: none; }
+        @media print {
+            .no-print { display: none !important; }
+            .printable { display: block !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="app" class="min-h-screen"></div>
+    
+    <script>
+    // ==================== AUDIO ENGINE ====================
+    class AudioEngine {
+        constructor() {
+            this.ctx = null;
+            this.enabled = true;
+        }
+        
+        init() {
+            if (!this.ctx) {
+                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        playTone(freq, duration, type = 'sine', volume = 0.3) {
+            if (!this.enabled || !this.ctx) return;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.type = type;
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(volume, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+            osc.start();
+            osc.stop(this.ctx.currentTime + duration);
+        }
+        
+        correct() {
+            this.playTone(523, 0.1, 'sine', 0.3);
+            setTimeout(() => this.playTone(659, 0.1, 'sine', 0.3), 100);
+            setTimeout(() => this.playTone(784, 0.2, 'sine', 0.3), 200);
+        }
+        
+        wrong() {
+            this.playTone(200, 0.3, 'sawtooth', 0.2);
+        }
+        
+        click() {
+            this.playTone(800, 0.05, 'sine', 0.1);
+        }
+        
+        levelUp() {
+            [523, 587, 659, 698, 784, 880, 988, 1047].forEach((f, i) => {
+                setTimeout(() => this.playTone(f, 0.15, 'sine', 0.2), i * 80);
+            });
+        }
+        
+        gameComplete() {
+            const notes = [523, 659, 784, 1047, 784, 1047];
+            notes.forEach((f, i) => {
+                setTimeout(() => this.playTone(f, 0.2, 'sine', 0.3), i * 150);
+            });
+        }
+    }
+    
+    const audio = new AudioEngine();
+    
+    // ==================== GAME STATE ====================
+    const state = {
+        currentScreen: 'home',
+        currentGame: null,
+        score: 0,
+        totalScore: 0,
+        streak: 0,
+        bestStreak: 0,
+        level: 1,
+        questionsAnswered: 0,
+        correctAnswers: 0,
+        difficulty: 'standard', // 'support', 'standard', 'challenge'
+        numberRange: '0-100',
+        soundEnabled: true,
+        gamesCompleted: [],
+        achievements: [],
+        currentQuestion: null,
+        questionIndex: 0,
+        totalQuestions: 10,
+        timeLeft: 0,
+        timerInterval: null,
+        studentName: '',
+    };
+    
+    // ==================== UTILITY FUNCTIONS ====================
+    function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
+    function shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+    
+    function getRange() {
+        if (state.numberRange === '0-100') return { min: 0, max: 100 };
+        return { min: 0, max: 1000 };
+    }
+    
+    function getDifficultyMultiplier() {
+        if (state.difficulty === 'support') return 0.7;
+        if (state.difficulty === 'challenge') return 1.3;
+        return 1;
+    }
+    
+    function generateNumber() {
+        const { min, max } = getRange();
+        return randInt(min, max);
+    }
+    
+    function generatePair() {
+        const { min, max } = getRange();
+        const a = randInt(min, max);
+        let b = randInt(min, max);
+        // Ensure some pairs are equal for challenge
+        if (state.difficulty === 'challenge' && Math.random() < 0.15) b = a;
+        return [a, b];
+    }
+    
+    function generateSet(count) {
+        const { min, max } = getRange();
+        const nums = new Set();
+        while (nums.size < count) nums.add(randInt(min, max));
+        return [...nums];
+    }
+    
+    function showConfetti() {
+        const colors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899'];
+        for (let i = 0; i < 30; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + 'vw';
+            piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.animationDelay = Math.random() * 0.5 + 's';
+            piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+            document.body.appendChild(piece);
+            setTimeout(() => piece.remove(), 4000);
+        }
+    }
+    
+    function getStars(ratio) {
+        if (ratio >= 0.9) return 3;
+        if (ratio >= 0.7) return 2;
+        if (ratio >= 0.5) return 1;
+        return 0;
+    }
+    
+    function renderStars(count, max = 3) {
+        let html = '';
+        for (let i = 0; i < max; i++) {
+            html += `<span class="${i < count ? 'star' : 'star-empty'} text-2xl">★</span>`;
+        }
+        return html;
+    }
+    
+    // ==================== QUESTION GENERATORS ====================
+    const QuestionGenerators = {
+        comparison() {
+            const [a, b] = generatePair();
+            const correct = a > b ? '>' : a < b ? '<' : '=';
+            return {
+                type: 'comparison',
+                numA: a,
+                numB: b,
+                correct,
+                prompt: `Which symbol makes this true?`,
+                display: `${a} ___ ${b}`
+            };
+        },
+        
+        greatest() {
+            const count = state.difficulty === 'support' ? 3 : state.difficulty === 'challenge' ? 5 : 4;
+            const nums = generateSet(count);
+            const correct = Math.max(...nums);
+            return {
+                type: 'greatest',
+                numbers: nums,
+                correct,
+                prompt: 'Which number is the GREATEST?'
+            };
+        },
+        
+        smallest() {
+            const count = state.difficulty === 'support' ? 3 : state.difficulty === 'challenge' ? 5 : 4;
+            const nums = generateSet(count);
+            const correct = Math.min(...nums);
+            return {
+                type: 'smallest',
+                numbers: nums,
+                correct,
+                prompt: 'Which number is the SMALLEST?'
+            };
+        },
+        
+        orderAsc() {
+            const count = state.difficulty === 'support' ? 3 : state.difficulty === 'challenge' ? 5 : 4;
+            const nums = generateSet(count);
+            const sorted = [...nums].sort((a, b) => a - b);
+            return {
+                type: 'orderAsc',
+                numbers: shuffle(nums),
+                correct: sorted,
+                prompt: 'Put these numbers in order from LEAST to GREATEST:'
+            };
+        },
+        
+        orderDesc() {
+            const count = state.difficulty === 'support' ? 3 : state.difficulty === 'challenge' ? 5 : 4;
+            const nums = generateSet(count);
+            const sorted = [...nums].sort((a, b) => b - a);
+            return {
+                type: 'orderDesc',
+                numbers: shuffle(nums),
+                correct: sorted,
+                prompt: 'Put these numbers in order from GREATEST to LEAST:'
+            };
+        },
+        
+        numberLine() {
+            const { min, max } = getRange();
+            const range = max - min;
+            const target = randInt(min + Math.floor(range * 0.1), max - Math.floor(range * 0.1));
+            
+            // Generate wrong options near the target
+            const options = [target];
+            while (options.length < 4) {
+                const offset = randInt(-Math.floor(range * 0.15), Math.floor(range * 0.15));
+                const opt = target + offset;
+                if (opt >= min && opt <= max && !options.includes(opt)) {
+                    options.push(opt);
+                }
+            }
+            
+            return {
+                type: 'numberLine',
+                target,
+                options: shuffle(options),
+                correct: target,
+                min,
+                max,
+                prompt: `Where does ${target} go on the number line?`
+            };
+        },
+        
+        tally() {
+            const count = state.difficulty === 'support' ? randInt(3, 8) : 
+                          state.difficulty === 'challenge' ? randInt(15, 30) : randInt(8, 20);
+            return {
+                type: 'tally',
+                count,
+                correct: count,
+                prompt: 'How many tally marks do you see?'
+            };
+        },
+        
+        tallyCreate() {
+            const count = state.difficulty === 'support' ? randInt(3, 10) : 
+                          state.difficulty === 'challenge' ? randInt(15, 25) : randInt(8, 18);
+            return {
+                type: 'tallyCreate',
+                count,
+                correct: count,
+                prompt: `Create tally marks for the number ${count}`
+            };
+        },
+        
+        placeValue() {
+            const { max } = getRange();
+            const num = max <= 100 ? randInt(10, 100) : randInt(100, 1000);
+            const numStr = num.toString();
+            const posIdx = randInt(0, numStr.length - 1);
+            const places = ['ones', 'tens', 'hundreds'];
+            const placeIdx = numStr.length - 1 - posIdx;
+            const digit = parseInt(numStr[posIdx]);
+            
+            return {
+                type: 'placeValue',
+                number: num,
+                digit,
+                place: places[placeIdx],
+                placeIdx: posIdx,
+                correct: digit,
+                prompt: `What digit is in the ${places[placeIdx]} place?`
+            };
+        },
+        
+        missingNumber() {
+            const { min, max } = getRange();
+            const step = state.difficulty === 'challenge' ? randInt(5, 25) : randInt(1, 10);
+            const start = randInt(min, max - step * 4);
+            const sequence = [];
+            for (let i = 0; i < 5; i++) sequence.push(start + step * i);
+            const missingIdx = randInt(1, 3);
+            const correct = sequence[missingIdx];
+            const display = sequence.map((n, i) => i === missingIdx ? '?' : n);
+            
+            return {
+                type: 'missingNumber',
+                display,
+                correct,
+                step,
+                prompt: 'What number is missing?'
+            };
+        }
+    };
+    
+    // ==================== GAME DEFINITIONS ====================
+    const GAMES = {
+        compare: {
+            id: 'compare',
+            name: 'Compare It!',
+            emoji: '⚖️',
+            description: 'Compare numbers using >, <, and =',
+            color: 'from-blue-400 to-blue-600',
+            bgColor: 'bg-blue-50',
+            borderColor: 'border-blue-200',
+            objectives: ['Compare whole numbers using >, <, =', 'Understand relative magnitude'],
+            questionTypes: ['comparison'],
+            standards: ['3.NBT.A.1', '3.NBT.A.3'],
+            timePerQuestion: 15,
+            generate() { return QuestionGenerators.comparison(); }
+        },
+        greatest: {
+            id: 'greatest',
+            name: 'Greatest & Smallest',
+            emoji: '👑',
+            description: 'Find the biggest and smallest numbers',
+            color: 'from-amber-400 to-amber-600',
+            bgColor: 'bg-amber-50',
+            borderColor: 'border-amber-200',
+            objectives: ['Identify greatest and smallest in a set', 'Compare multi-digit numbers'],
+            questionTypes: ['greatest', 'smallest'],
+            standards: ['3.NBT.A.3'],
+            timePerQuestion: 20,
+            generate() {
+                return Math.random() < 0.5 ? QuestionGenerators.greatest() : QuestionGenerators.smallest();
+            }
+        },
+        order: {
+            id: 'order',
+            name: 'Order Up!',
+            emoji: '📊',
+            description: 'Put numbers in order from least to greatest',
+            color: 'from-green-400 to-green-600',
+            bgColor: 'bg-green-50',
+            borderColor: 'border-green-200',
+            objectives: ['Order numbers ascending/descending', 'Understand number sequences'],
+            questionTypes: ['orderAsc', 'orderDesc'],
+            standards: ['3.NBT.A.3'],
+            timePerQuestion: 30,
+            generate() {
+                return Math.random() < 0.5 ? QuestionGenerators.orderAsc() : QuestionGenerators.orderDesc();
+            }
+        },
+        numberline: {
+            id: 'numberline',
+            name: 'Number Line',
+            emoji: '📏',
+            description: 'Place numbers on a number line',
+            color: 'from-purple-400 to-purple-600',
+            bgColor: 'bg-purple-50',
+            borderColor: 'border-purple-200',
+            objectives: ['Plot numbers on number lines', 'Estimate number positions', 'Read number lines'],
+            questionTypes: ['numberLine', 'missingNumber'],
+            standards: ['3.NBT.A.1'],
+            timePerQuestion: 20,
+            generate() {
+                return Math.random() < 0.6 ? QuestionGenerators.numberLine() : QuestionGenerators.missingNumber();
+            }
+        },
+        tally: {
+            id: 'tally',
+            name: 'Tally Time',
+            emoji: '📝',
+            description: 'Read and create tally marks',
+            color: 'from-pink-400 to-pink-600',
+            bgColor: 'bg-pink-50',
+            borderColor: 'border-pink-200',
+            objectives: ['Read tally marks', 'Create tally marks', 'Connect tallies to numbers'],
+            questionTypes: ['tally', 'tallyCreate'],
+            standards: ['3.MD.B.3'],
+            timePerQuestion: 20,
+            generate() {
+                return Math.random() < 0.5 ? QuestionGenerators.tally() : QuestionGenerators.tallyCreate();
+            }
+        },
+        placevalue: {
+            id: 'placevalue',
+            name: 'Place Value Pro',
+            emoji: '🔢',
+            description: 'Master place value understanding',
+            color: 'from-teal-400 to-teal-600',
+            bgColor: 'bg-teal-50',
+            borderColor: 'border-teal-200',
+            objectives: ['Identify digits in place values', 'Understand hundreds, tens, ones'],
+            questionTypes: ['placeValue'],
+            standards: ['3.NBT.A.1'],
+            timePerQuestion: 15,
+            generate() { return QuestionGenerators.placeValue(); }
+        },
+        mixed: {
+            id: 'mixed',
+            name: 'Mixed Challenge',
+            emoji: '🌟',
+            description: 'All skills combined for the ultimate challenge!',
+            color: 'from-indigo-400 to-indigo-600',
+            bgColor: 'bg-indigo-50',
+            borderColor: 'border-indigo-200',
+            objectives: ['Apply all number sense skills', 'Switch between problem types'],
+            questionTypes: ['comparison', 'greatest', 'smallest', 'orderAsc', 'numberLine', 'tally', 'placeValue', 'missingNumber'],
+            standards: ['3.NBT.A.1', '3.NBT.A.3', '3.MD.B.3'],
+            timePerQuestion: 20,
+            generate() {
+                const types = ['comparison', 'greatest', 'smallest', 'orderAsc', 'numberLine', 'tally', 'placeValue', 'missingNumber'];
+                const type = types[Math.floor(Math.random() * types.length)];
+                return QuestionGenerators[type]();
+            }
+        }
+    };
+    
+    // ==================== RENDER FUNCTIONS ====================
+    function render() {
+        const app = document.getElementById('app');
+        switch(state.currentScreen) {
+            case 'home': app.innerHTML = renderHome(); break;
+            case 'setup': app.innerHTML = renderSetup(); break;
+            case 'game': app.innerHTML = renderGame(); break;
+            case 'results': app.innerHTML = renderResults(); break;
+            case 'teacher': app.innerHTML = renderTeacherPanel(); break;
+            case 'printables': app.innerHTML = renderPrintables(); break;
+        }
+    }
+    
+    function renderHome() {
+        return `
+        <div class="min-h-screen p-4 md:p-8">
+            <div class="max-w-6xl mx-auto">
+                <!-- Header -->
+                <div class="text-center mb-8 bounce-in">
+                    <div class="inline-block bg-white/20 backdrop-blur-sm rounded-2xl px-8 py-4 mb-4">
+                        <h1 class="title-font text-4xl md:text-6xl text-white drop-shadow-lg">
+                            🎮 Math Masters
+                        </h1>
+                        <p class="text-white/90 text-lg mt-2">3rd Grade Number Sense Adventure</p>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-4 mt-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 text-white">
+                            <span class="text-sm">🏆 Total Score:</span>
+                            <span class="font-bold text-xl ml-1">${state.totalScore}</span>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 text-white">
+                            <span class="text-sm">🔥 Best Streak:</span>
+                            <span class="font-bold text-xl ml-1">${state.bestStreak}</span>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl px-4 py-2 text-white">
+                            <span class="text-sm">🎯 Games Won:</span>
+                            <span class="font-bold text-xl ml-1">${state.gamesCompleted.length}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Student Name -->
+                ${!state.studentName ? `
+                <div class="max-w-md mx-auto mb-6 bg-white rounded-2xl p-6 shadow-lg bounce-in">
+                    <label class="block text-gray-700 font-bold mb-2">What's your name, Math Master?</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="studentNameInput" placeholder="Enter your name..." 
+                            class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none text-lg"
+                            maxlength="20">
+                        <button onclick="setStudentName()" class="btn-primary text-white px-6 py-3 rounded-xl font-bold">Go!</button>
+                    </div>
+                </div>` : `
+                <div class="text-center mb-6">
+                    <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full font-bold">
+                        👋 Welcome back, ${state.studentName}!
+                    </span>
+                </div>`}
+                
+                <!-- Game Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+                    ${Object.values(GAMES).map((game, i) => `
+                    <div class="game-card bg-white rounded-2xl p-5 shadow-lg border-2 ${game.borderColor} slide-up" 
+                         style="animation-delay: ${i * 0.1}s"
+                         onclick="selectGame('${game.id}')">
+                        <div class="text-4xl mb-3">${game.emoji}</div>
+                        <h3 class="title-font text-xl text-gray-800 mb-1">${game.name}</h3>
+                        <p class="text-gray-500 text-sm mb-3">${game.description}</p>
+                        <div class="flex flex-wrap gap-1">
+                            ${game.standards.map(s => `<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">${s}</span>`).join('')}
+                        </div>
+                        ${state.gamesCompleted.includes(game.id) ? '<div class="mt-2 text-green-500 text-sm font-bold">✓ Completed</div>' : ''}
+                    </div>
+                    `).join('')}
+                </div>
+                
+                <!-- Teacher Resources -->
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="showTeacherPanel()" class="bg-white/90 hover:bg-white text-gray-700 px-6 py-3 rounded-xl font-bold shadow-lg transition-all hover:scale-105">
+                        📋 Teacher Panel
+                    </button>
+                    <button onclick="showPrintables()" class="bg-white/90 hover:bg-white text-gray-700 px-6 py-3 rounded-xl font-bold shadow-lg transition-all hover:scale-105">
+                        🖨️ Printables & Materials
+                    </button>
+                    <button onclick="toggleSound()" class="bg-white/90 hover:bg-white text-gray-700 px-6 py-3 rounded-xl font-bold shadow-lg transition-all hover:scale-105">
+                        ${state.soundEnabled ? '🔊 Sound On' : '🔇 Sound Off'}
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderSetup() {
+        const game = GAMES[state.currentGame];
+        return `
+        <div class="min-h-screen p-4 md:p-8 flex items-center justify-center">
+            <div class="max-w-lg w-full bg-white rounded-3xl shadow-2xl p-8 bounce-in">
+                <button onclick="goHome()" class="text-gray-400 hover:text-gray-600 mb-4 inline-block">← Back</button>
+                
+                <div class="text-center mb-6">
+                    <div class="text-5xl mb-3">${game.emoji}</div>
+                    <h2 class="title-font text-3xl text-gray-800">${game.name}</h2>
+                    <p class="text-gray-500 mt-1">${game.description}</p>
+                </div>
+                
+                <!-- Difficulty -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">📐 Difficulty Level</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setDifficulty('support')" 
+                            class="p-3 rounded-xl border-2 text-center transition-all ${state.difficulty === 'support' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 hover:border-gray-300'}">
+                            <div class="text-lg">🌱</div>
+                            <div class="font-bold text-sm">Support</div>
+                            <div class="text-xs text-gray-500">Extra help</div>
+                        </button>
+                        <button onclick="setDifficulty('standard')" 
+                            class="p-3 rounded-xl border-2 text-center transition-all ${state.difficulty === 'standard' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 hover:border-gray-300'}">
+                            <div class="text-lg">📚</div>
+                            <div class="font-bold text-sm">Standard</div>
+                            <div class="text-xs text-gray-500">On grade</div>
+                        </button>
+                        <button onclick="setDifficulty('challenge')" 
+                            class="p-3 rounded-xl border-2 text-center transition-all ${state.difficulty === 'challenge' ? 'border-purple-500 bg-purple-50 text-purple-700' : 'border-gray-200 hover:border-gray-300'}">
+                            <div class="text-lg">🚀</div>
+                            <div class="font-bold text-sm">Challenge</div>
+                            <div class="text-xs text-gray-500">Extended</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Number Range -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">🔢 Number Range</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setRange('0-100')" 
+                            class="p-3 rounded-xl border-2 text-center transition-all ${state.numberRange === '0-100' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 hover:border-gray-300'}">
+                            <div class="font-bold">0 – 100</div>
+                            <div class="text-xs text-gray-500">2-3 digit numbers</div>
+                        </button>
+                        <button onclick="setRange('0-1000')" 
+                            class="p-3 rounded-xl border-2 text-center transition-all ${state.numberRange === '0-1000' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-gray-200 hover:border-gray-300'}">
+                            <div class="font-bold">0 – 1,000</div>
+                            <div class="text-xs text-gray-500">3-4 digit numbers</div>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Number of Questions -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-bold mb-2">📝 Questions: <span id="qCountDisplay">${state.totalQuestions}</span></label>
+                    <input type="range" id="qCountSlider" min="5" max="20" value="${state.totalQuestions}" 
+                        oninput="state.totalQuestions=parseInt(this.value);document.getElementById('qCountDisplay').textContent=this.value"
+                        class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    <div class="flex justify-between text-xs text-gray-400 mt-1">
+                        <span>5 (Quick)</span>
+                        <span>20 (Full)</span>
+                    </div>
+                </div>
+                
+                <!-- Objectives -->
+                <div class="mb-6 bg-gray-50 rounded-xl p-4">
+                    <h4 class="font-bold text-gray-700 mb-2">🎯 Learning Objectives:</h4>
+                    <ul class="space-y-1">
+                        ${game.objectives.map(obj => `<li class="text-sm text-gray-600 flex items-center gap-2"><span class="text-green-500">✓</span> ${obj}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <!-- Start Button -->
+                <button onclick="startGame()" class="w-full btn-primary text-white py-4 rounded-xl font-bold text-xl shadow-lg pulse-anim">
+                    🎮 Start Playing!
+                </button>
+            </div>
+        </div>`;
+    }
+    
+    function renderGame() {
+        const game = GAMES[state.currentGame];
+        const q = state.currentQuestion;
+        if (!q) return '<div class="min-h-screen flex items-center justify-center text-white text-2xl">Loading...</div>';
+        
+        const progress = ((state.questionIndex) / state.totalQuestions) * 100;
+        
+        return `
+        <div class="min-h-screen p-4 md:p-6">
+            <div class="max-w-3xl mx-auto">
+                <!-- Top Bar -->
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="confirmQuit()" class="text-white/80 hover:text-white text-sm font-bold">✕ Quit</button>
+                    <div class="flex items-center gap-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white text-sm">
+                            ⭐ ${state.score}
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white text-sm">
+                            🔥 ${state.streak}
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white text-sm">
+                            ${game.emoji} ${state.questionIndex + 1}/${state.totalQuestions}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-white/20 rounded-full h-3 mb-6">
+                    <div class="progress-bar bg-white rounded-full h-3" style="width: ${progress}%"></div>
+                </div>
+                
+                <!-- Question Area -->
+                <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 mb-4 bounce-in" id="questionArea">
+                    ${renderQuestion(q, game)}
+                </div>
+                
+                <!-- Feedback Area -->
+                <div id="feedbackArea" class="hidden"></div>
+            </div>
+        </div>`;
+    }
+    
+    function renderQuestion(q, game) {
+        switch(q.type) {
+            case 'comparison': return renderComparison(q);
+            case 'greatest': return renderMultipleChoice(q);
+            case 'smallest': return renderMultipleChoice(q);
+            case 'orderAsc': return renderOrdering(q);
+            case 'orderDesc': return renderOrdering(q);
+            case 'numberLine': return renderNumberLineQ(q);
+            case 'tally': return renderTallyRead(q);
+            case 'tallyCreate': return renderTallyCreate(q);
+            case 'placeValue': return renderPlaceValue(q);
+            case 'missingNumber': return renderMissingNumber(q);
+            default: return '<p>Unknown question type</p>';
+        }
+    }
+    
+    function renderComparison(q) {
+        return `
+        <div class="text-center">
+            <p class="text-gray-500 font-bold mb-4">${q.prompt}</p>
+            <div class="flex items-center justify-center gap-4 md:gap-8 mb-8">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-6 md:p-8 shadow-inner">
+                    <span class="title-font text-4xl md:text-6xl text-blue-700">${q.numA.toLocaleString()}</span>
+                </div>
+                <div class="text-4xl md:text-5xl text-gray-300">?</div>
+                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-6 md:p-8 shadow-inner">
+                    <span class="title-font text-4xl md:text-6xl text-red-700">${q.numB.toLocaleString()}</span>
+                </div>
+            </div>
+            <p class="text-gray-400 text-sm mb-4">Choose the correct symbol:</p>
+            <div class="flex justify-center gap-4">
+                <button onclick="answerComparison('<')" class="comparison-symbol bg-blue-50 text-blue-700 hover:bg-blue-100" id="sym-lt">&lt;</button>
+                <button onclick="answerComparison('=')" class="comparison-symbol bg-green-50 text-green-700 hover:bg-green-100" id="sym-eq">=</button>
+                <button onclick="answerComparison('>')" class="comparison-symbol bg-red-50 text-red-700 hover:bg-red-100" id="sym-gt">&gt;</button>
+            </div>
+            ${state.difficulty === 'support' ? `
+            <div class="mt-4 bg-yellow-50 rounded-xl p-3 text-sm text-yellow-800">
+                💡 <strong>Hint:</strong> The alligator mouth opens toward the BIGGER number! 
+                Think: which number would the alligator want to eat?
+            </div>` : ''}
+        </div>`;
+    }
+    
+    function renderMultipleChoice(q) {
+        return `
+        <div class="text-center">
+            <p class="text-gray-700 font-bold text-xl mb-6">${q.prompt}</p>
+            <div class="flex flex-wrap justify-center gap-3 mb-4">
+                ${q.numbers.map(n => `
+                    <span class="bg-gray-100 rounded-xl px-4 py-2 font-bold text-lg text-gray-700">${n.toLocaleString()}</span>
+                `).join('')}
+            </div>
+            <p class="text-gray-400 text-sm mb-4">Tap the correct answer:</p>
+            <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                ${q.numbers.map(n => `
+                    <button onclick="answerMultiple(${n})" 
+                        class="bg-gradient-to-br from-indigo-50 to-indigo-100 hover:from-indigo-100 hover:to-indigo-200 
+                        rounded-xl p-4 font-bold text-xl text-indigo-700 transition-all hover:scale-105 border-2 border-transparent hover:border-indigo-300">
+                        ${n.toLocaleString()}
+                    </button>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+    
+    function renderOrdering(q) {
+        const isAsc = q.type === 'orderAsc';
+        return `
+        <div class="text-center">
+            <p class="text-gray-700 font-bold text-xl mb-6">${q.prompt}</p>
+            <p class="text-gray-400 text-sm mb-4">Tap numbers in the correct order:</p>
+            
+            <!-- Answer slots -->
+            <div class="flex justify-center gap-2 mb-6 flex-wrap" id="answerSlots">
+                ${q.numbers.map((_, i) => `
+                    <div class="w-16 h-16 md:w-20 md:h-20 border-3 border-dashed border-gray-300 rounded-xl flex items-center justify-center text-gray-300 font-bold text-lg" id="slot-${i}">
+                        ${i + 1}
+                    </div>
+                `).join('')}
+            </div>
+            
+            <!-- Number buttons -->
+            <div class="flex justify-center gap-3 flex-wrap" id="numberButtons">
+                ${q.numbers.map(n => `
+                    <button onclick="selectOrderNumber(${n}, this)" 
+                        class="draggable-number bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 font-bold text-xl text-green-700 border-2 border-green-200 hover:border-green-400 transition-all"
+                        id="num-btn-${n}">
+                        ${n.toLocaleString()}
+                    </button>
+                `).join('')}
+            </div>
+            
+            <div class="mt-4 flex justify-center gap-3">
+                <button onclick="resetOrder()" class="text-gray-500 hover:text-gray-700 font-bold text-sm">↺ Reset</button>
+            </div>
+            
+            ${state.difficulty === 'support' ? `
+            <div class="mt-4 bg-yellow-50 rounded-xl p-3 text-sm text-yellow-800">
+                💡 <strong>Hint:</strong> "${isAsc ? 'Least to greatest' : 'Greatest to least'}" means start with the ${isAsc ? 'smallest' : 'biggest'} number first!
+            </div>` : ''}
+        </div>`;
+    }
+    
+    function renderNumberLineQ(q) {
+        const range = q.max - q.min;
+        return `
+        <div class="text-center">
+            <p class="text-gray-700 font-bold text-xl mb-6">${q.prompt}</p>
+            
+            <!-- Number Line Visual -->
+            <div class="relative mx-4 md:mx-12 mb-8">
+                <div class="h-1 bg-gray-800 rounded relative">
+                    ${[0, 0.25, 0.5, 0.75, 1].map(pct => `
+                        <div class="absolute" style="left: ${pct * 100}%; top: -8px;">
+                            <div class="w-0.5 h-4 bg-gray-800"></div>
+                            <div class="text-xs font-bold text-gray-600 mt-2" style="transform: translateX(-50%)">${Math.round(q.min + range * pct).toLocaleString()}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            
+            <p class="text-gray-400 text-sm mb-4">Where does <strong class="text-indigo-600">${q.target.toLocaleString()}</strong> belong?</p>
+            
+            <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
+                ${q.options.map(n => `
+                    <button onclick="answerNumberLine(${n})" 
+                        class="bg-gradient-to-br from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 
+                        rounded-xl p-4 font-bold text-lg text-purple-700 transition-all hover:scale-105 border-2 border-transparent hover:border-purple-300">
+                        📍 ${n.toLocaleString()}
+                    </button>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+    
+    function renderTallyRead(q) {
+        // Generate tally marks display
+        const groups = Math.floor(q.count / 5);
+        const remainder = q.count % 5;
+        let tallyHTML = '<div class="flex flex-wrap items-end justify-center gap-4 mb-6">';
+        
+        for (let g = 0; g < groups; g++) {
+            tallyHTML += '<div class="flex items-end gap-1 relative">';
+            for (let i = 0; i < 4; i++) {
+                tallyHTML += '<div class="w-1.5 h-10 bg-gray-800 rounded-sm"></div>';
+            }
+            tallyHTML += '<div class="absolute inset-0 flex items-center"><div class="w-full h-1.5 bg-gray-800 rounded-sm transform -rotate-12"></div></div>';
+            tallyHTML += '</div>';
+        }
+        
+        if (remainder > 0) {
+            tallyHTML += '<div class="flex items-end gap-1">';
+            for (let i = 0; i < remainder; i++) {
+                tallyHTML += '<div class="w-1.5 h-10 bg-gray-800 rounded-sm"></div>';
+            }
+            tallyHTML += '</div>';
+        }
+        tallyHTML += '</div>';
+        
+        return `
+        <div class="text-center">
+            <p class="text-gray-700 font-bold text-xl mb-6">${q.prompt}</p>
+            <div class="bg-gray-50 rounded-2xl p-6 mb-6">
+                ${tallyHTML}
+            </div>
+            <p class="text-gray-400 text-sm mb-4">How many tally marks are there?</p>
+            <div class="grid grid-cols-4 gap-2 max-w-sm mx-auto">
+                ${generateTallyOptions(q.count).map(n => `
+                    <button onclick="answerTally(${n})" 
+                        class="bg-gradient-to-br from-pink-50 to-pink-100 hover:from-pink-100 hover:to-pink-200 
+                        rounded-xl p-3 font-bold text-lg text-pink-700 transition-all hover:scale-105 border-2 border-transparent hover:border-pink-300">
+                        ${n}
+                    </button>
+                `).join('')}
+            </div>
+            ${state.difficulty === 'support' ? `
+            <div class="mt-4 bg-yellow-50 rounded-xl p-3 text-sm text-yellow-800">
+                💡 <strong>Hint:</strong> Count by 5s for each group of 5 marks, then add the extras!
+            </div>` : ''}
+        </div>`;
+    }
+    
+    function renderTallyCreate(q) {
+        return `
+        <div class="text-center">
+            <p class="text-gray-700 font-bold text-xl mb-4">${q.prompt}</p>
+            <div class="bg-indigo-50 rounded-2xl p-4 mb-6 inline-block">
+                <span class="title-font text-5xl text-indigo-700">${q.count}</span>
+            </div>
+            <p class="text-gray-400 text-sm mb-4">Tap to add tally marks. Remember: every 5th mark crosses through!</p>
+            
+            <div class="bg-gray-50 rounded-2xl p-6 mb-4 min-h-[100px] flex flex-wrap items-end justify-center gap-4" id="tallyArea">
+                <span class="text-gray-300 text-sm" id="tallyPlaceholder">Tap buttons below to create tally marks</span>
+            </div>
+            
+            <div class="flex justify-center gap-3 mb-4">
+                <button onclick="addTallyMark()" class="btn-primary text-white px-6 py-3 rounded-xl font-bold">
+                    | Add Mark
+                </button>
+                <button onclick="removeTallyMark()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-xl font-bold">
+                    ← Remove
+                </button>
+            </div>
+            
+            <div class="text-center">
+                <span class="text-gray-500 font-bold">Your count: <span id="tallyCount">0</span> / ${q.count}</span>
+            </div>
+            
+            <button onclick="checkTallyCreate()" class="mt-4 btn-success text-white px-8 py-3 rounded-xl font-bold text-lg">
+                ✓ Check Answer
+            </button>
+        </div>`;
+    }
+    
+    function renderPlaceValue(q) {
+        const numStr = q.number.toString();
+        return `
+        <div class="text-center">
+            <p class="text-gray-700 font-bold text-xl mb-6">${q.prompt}</p>
+            
+            <div class="bg-gradient-to-br from-teal-50 to-teal-100 rounded-2xl p-6 mb-6 inline-block">
+                <div class="flex gap-1 justify-center">
+                    ${numStr.split('').map((d, i) => `
+                        <div class="w-12 h-14 md:w-16 md:h-18 bg-white rounded-lg flex items-center justify-center shadow-sm ${i === q.placeIdx ? 'ring-3 ring-teal-500 bg-teal-50' : ''}">
+                            <span class="title-font text-2xl md:text-3xl ${i === q.placeIdx ? 'text-teal-700' : 'text-gray-700'}">${d}</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="flex gap-1 justify-center mt-2">
+                    ${numStr.split('').map((d, i) => {
+                        const placeIdx = numStr.length - 1 - i;
+                        const places = ['ones', 'tens', 'hundreds', 'thousands'];
+                        return `<div class="w-12 md:w-16 text-xs text-gray-500">${places[placeIdx]}</div>`;
+                    }).join('')}
+                </div>
+            </div>
+            
+            <p class="text-gray-400 text-sm mb-4">What digit is in the <strong class="text-teal-600">${q.place}</strong> place?</p>
+            
+            <div class="grid grid-cols-5 gap-2 max-w-xs mx-auto">
+                ${[0,1,2,3,4,5,6,7,8,9].map(n => `
+                    <button onclick="answerPlaceValue(${n})" 
+                        class="bg-gradient-to-br from-teal-50 to-teal-100 hover:from-teal-100 hover:to-teal-200 
+                        rounded-lg p-2 font-bold text-lg text-teal-700 transition-all hover:scale-105">
+                        ${n}
+                    </button>
+                `).join('')}
+            </div>
+        </div>`;
+    }
+    
+    function renderMissingNumber(q) {
+        return `
+        <div class="text-center">
+            <p class="text-gray-700 font-bold text-xl mb-6">${q.prompt}</p>
+            
+            <div class="flex justify-center gap-2 mb-6 flex-wrap">
+                ${q.display.map((n, i) => `
+                    <div class="${n === '?' ? 'bg-yellow-100 border-2 border-yellow-400 border-dashed' : 'bg-gray-100'} rounded-xl w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                        <span class="title-font text-2xl md:text-3xl ${n === '?' ? 'text-yellow-600' : 'text-gray-700'}">${n === '?' ? '?' : n.toLocaleString()}</span>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <p class="text-gray-400 text-sm mb-4">What number completes the pattern? (Step: +${q.step})</p>
+            
+            <div class="grid grid-cols-4 gap-2 max-w-sm mx-auto">
+                ${generateMissingOptions(q.correct, q.step).map(n => `
+                    <button onclick="answerMissing(${n})" 
+                        class="bg-gradient-to-br from-amber-50 to-amber-100 hover:from-amber-100 hover:to-amber-200 
+                        rounded-xl p-3 font-bold text-lg text-amber-700 transition-all hover:scale-105 border-2 border-transparent hover:border-amber-300">
+                        ${n.toLocaleString()}
+                    </button>
+                `).join('')}
+            </div>
+            
+            ${state.difficulty === 'support' ? `
+            <div class="mt-4 bg-yellow-50 rounded-xl p-3 text-sm text-yellow-800">
+                💡 <strong>Hint:</strong> The pattern goes up by ${q.step} each time. Look at the numbers you can see!
+            </div>` : ''}
+        </div>`;
+    }
+    
+    function renderResults() {
+        const ratio = state.totalQuestions > 0 ? state.correctAnswers / state.totalQuestions : 0;
+        const stars = getStars(ratio);
+        const game = GAMES[state.currentGame];
+        const percentage = Math.round(ratio * 100);
+        
+        let message = '';
+        let messageEmoji = '';
+        if (percentage >= 90) { message = 'AMAZING! You\'re a Math Master!'; messageEmoji = '🏆'; }
+        else if (percentage >= 70) { message = 'Great job! Keep it up!'; messageEmoji = '🌟'; }
+        else if (percentage >= 50) { message = 'Good effort! Practice makes perfect!'; messageEmoji = '💪'; }
+        else { message = 'Keep trying! You\'ll get better!'; messageEmoji = '📚'; }
+        
+        return `
+        <div class="min-h-screen p-4 md:p-8 flex items-center justify-center">
+            <div class="max-w-lg w-full bg-white rounded-3xl shadow-2xl p-8 bounce-in text-center">
+                <div class="text-6xl mb-4">${messageEmoji}</div>
+                <h2 class="title-font text-3xl text-gray-800 mb-2">Game Complete!</h2>
+                <p class="text-gray-500 mb-4">${game.emoji} ${game.name}</p>
+                
+                <!-- Stars -->
+                <div class="mb-6">
+                    ${renderStars(stars)}
+                </div>
+                
+                <!-- Score Card -->
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-6 mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-3xl font-bold text-indigo-600">${state.correctAnswers}/${state.totalQuestions}</div>
+                            <div class="text-sm text-gray-500">Correct</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-purple-600">${percentage}%</div>
+                            <div class="text-sm text-gray-500">Accuracy</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-green-600">${state.score}</div>
+                            <div class="text-sm text-gray-500">Points</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-amber-600">${state.streak}</div>
+                            <div class="text-sm text-gray-500">Best Streak</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-lg font-bold text-gray-700 mb-6">${message}</p>
+                
+                <!-- Difficulty feedback -->
+                <div class="bg-gray-50 rounded-xl p-4 mb-6 text-left">
+                    <h4 class="font-bold text-gray-700 mb-2">📊 Performance Notes:</h4>
+                    ${percentage >= 90 && state.difficulty !== 'challenge' ? '<p class="text-sm text-green-600">✓ Ready to try a harder difficulty!</p>' : ''}
+                    ${percentage < 50 ? '<p class="text-sm text-amber-600">→ Consider trying Support level for extra practice</p>' : ''}
+                    ${percentage >= 70 && percentage < 90 ? '<p class="text-sm text-blue-600">→ Almost there! A bit more practice will get you to mastery!</p>' : ''}
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex flex-col gap-3">
+                    <button onclick="restartGame()" class="btn-primary text-white py-3 rounded-xl font-bold text-lg">
+                        🔄 Play Again
+                    </button>
+                    <button onclick="goHome()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-xl font-bold">
+                        🏠 Back to Games
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderTeacherPanel() {
+        return `
+        <div class="min-h-screen p-4 md:p-8">
+            <div class="max-w-4xl mx-auto">
+                <button onclick="goHome()" class="text-white/80 hover:text-white mb-4 inline-block font-bold">← Back to Home</button>
+                
+                <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 mb-6">
+                    <h2 class="title-font text-3xl text-gray-800 mb-2">📋 Teacher Panel</h2>
+                    <p class="text-gray-500 mb-6">Standards-aligned materials for 3rd Grade Number Sense</p>
+                    
+                    <!-- Tabs -->
+                    <div class="flex flex-wrap gap-2 mb-6 border-b pb-2">
+                        <button onclick="showTeacherTab('overview')" class="tab-btn active px-4 py-2 font-bold text-gray-600" id="tab-overview">Overview</button>
+                        <button onclick="showTeacherTab('standards')" class="tab-btn px-4 py-2 font-bold text-gray-600" id="tab-standards">Standards</button>
+                        <button onclick="showTeacherTab('differentiation')" class="tab-btn px-4 py-2 font-bold text-gray-600" id="tab-differentiation">Differentiation</button>
+                        <button onclick="showTeacherTab('assessment')" class="tab-btn px-4 py-2 font-bold text-gray-600" id="tab-assessment">Assessment</button>
+                        <button onclick="showTeacherTab('samples')" class="tab-btn px-4 py-2 font-bold text-gray-600" id="tab-samples">Sample Problems</button>
+                        <button onclick="showTeacherTab('management')" class="tab-btn px-4 py-2 font-bold text-gray-600" id="tab-management">Classroom Mgmt</button>
+                    </div>
+                    
+                    <div id="teacherContent">${renderTeacherOverview()}</div>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderTeacherOverview() {
+        return `
+        <div class="space-y-6">
+            <div class="bg-blue-50 rounded-xl p-5">
+                <h3 class="font-bold text-blue-800 text-lg mb-3">📚 Curriculum Overview</h3>
+                <p class="text-blue-700 mb-3">This digital game suite targets key 3rd-grade number sense standards through interactive, engaging gameplay. Each game focuses on specific skills with built-in differentiation.</p>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-gray-700 mb-2">🎯 Target Skills</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Comparing numbers using >, <, =</li>
+                            <li>• Ordering numbers (ascending/descending)</li>
+                            <li>• Finding greatest/smallest in a set</li>
+                            <li>• Reading and creating tally marks</li>
+                            <li>• Plotting numbers on number lines</li>
+                            <li>• Understanding place value</li>
+                            <li>• Identifying patterns in sequences</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-gray-700 mb-2">📐 Number Ranges & Progression</h4>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li><strong>Entry Point 1:</strong> 0–20 (Kindergarten review)</li>
+                            <li><strong>Entry Point 2:</strong> 0–100 (Grade 2 mastery)</li>
+                            <li><strong>Entry Point 3:</strong> 0–1,000 (Grade 3 target)</li>
+                            <li><strong>Extension:</strong> 0–10,000 (advanced)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 rounded-xl p-5">
+                <h3 class="font-bold text-green-800 text-lg mb-3">🎮 Game Formats</h3>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div class="bg-white rounded-lg p-3">
+                        <h5 class="font-bold text-sm text-gray-700">👫 Pair Work</h5>
+                        <p class="text-xs text-gray-500 mt-1">Students take turns answering. Partner checks and discusses reasoning. 10-15 min.</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3">
+                        <h5 class="font-bold text-sm text-gray-700">👥 Small Group (3-4)</h5>
+                        <p class="text-xs text-gray-500 mt-1">Collaborative problem-solving. Students explain thinking to group. 15-20 min.</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3">
+                        <h5 class="font-bold text-sm text-gray-700">🏫 Whole Class</h5>
+                        <p class="text-xs text-gray-500 mt-1">Project on board. Class votes, then discusses. Teacher facilitates. 10-15 min.</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3">
+                        <h5 class="font-bold text-sm text-gray-700">🧑 Independent</h5>
+                        <p class="text-xs text-gray-500 mt-1">Self-paced practice. Students work through levels. 10-20 min.</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3">
+                        <h5 class="font-bold text-sm text-gray-700">💻 Digital Center</h5>
+                        <p class="text-xs text-gray-500 mt-1">Rotational station. 2-3 students per device with headphones. 15 min rotation.</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-3">
+                        <h5 class="font-bold text-sm text-gray-700">🏠 Homework/Extension</h5>
+                        <p class="text-xs text-gray-500 mt-1">Take-home practice link. Parents can observe progress. Optional challenge mode.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-purple-50 rounded-xl p-5">
+                <h3 class="font-bold text-purple-800 text-lg mb-3">📝 Scoring & Roles</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">Scoring System</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Correct answer: +10 points</li>
+                            <li>• Streak bonus: +5 per consecutive correct</li>
+                            <li>• Speed bonus: +3 if answered in <5 seconds</li>
+                            <li>• Stars: 3★ (90%+), 2★ (70%+), 1★ (50%+)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">Student Roles (Group Play)</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• <strong>Reader:</strong> Reads the problem aloud</li>
+                            <li>• <strong>Solver:</strong> Works out the answer</li>
+                            <li>• <strong>Checker:</strong> Verifies the answer</li>
+                            <li>• <strong>Explainer:</strong> Tells WHY it's correct</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderTeacherStandards() {
+        return `
+        <div class="space-y-4">
+            <div class="bg-indigo-50 rounded-xl p-5">
+                <h3 class="font-bold text-indigo-800 text-lg mb-3">📐 Common Core Standards Alignment</h3>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-indigo-700">3.NBT.A.1</h4>
+                        <p class="text-sm text-gray-600">Use place value understanding to round whole numbers to the nearest 10 or 100.</p>
+                        <p class="text-xs text-gray-400 mt-1"><strong>Games:</strong> Number Line, Place Value Pro, Mixed Challenge</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-indigo-700">3.NBT.A.3</h4>
+                        <p class="text-sm text-gray-600">Compare two three-digit numbers based on meanings of the hundreds, tens, and ones digits, using >, =, and < symbols.</p>
+                        <p class="text-xs text-gray-400 mt-1"><strong>Games:</strong> Compare It!, Greatest & Smallest, Order Up!</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-indigo-700">3.MD.B.3</h4>
+                        <p class="text-sm text-gray-600">Draw a scaled bar graph to represent a data set with up to four categories.</p>
+                        <p class="text-xs text-gray-400 mt-1"><strong>Games:</strong> Tally Time (data collection foundation)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-5">
+                <h3 class="font-bold text-gray-800 text-lg mb-3">🔄 Progression Path</h3>
+                <div class="relative">
+                    <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-300"></div>
+                    <div class="space-y-4 pl-10">
+                        <div class="relative">
+                            <div class="absolute -left-8 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
+                            <h5 class="font-bold text-green-700">Level 1: Foundation (0-20)</h5>
+                            <p class="text-xs text-gray-500">Compare single/double digit numbers. Basic number line (0-20). Simple tallies (1-10).</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-8 w-4 h-4 bg-blue-400 rounded-full border-2 border-white"></div>
+                            <h5 class="font-bold text-blue-700">Level 2: Developing (0-100)</h5>
+                            <p class="text-xs text-gray-500">Compare 2-digit numbers. Number line to 100. Tallies to 25. Place value (tens/ones).</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-8 w-4 h-4 bg-purple-400 rounded-full border-2 border-white"></div>
+                            <h5 class="font-bold text-purple-700">Level 3: Grade-Level (0-1,000)</h5>
+                            <p class="text-xs text-gray-500">Compare 3-digit numbers. Number line to 1,000. Tallies to 50. Full place value understanding.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-8 w-4 h-4 bg-amber-400 rounded-full border-2 border-white"></div>
+                            <h5 class="font-bold text-amber-700">Level 4: Extension (0-10,000+)</h5>
+                            <p class="text-xs text-gray-500">Compare larger numbers. Complex patterns. Multi-step problems. Create own problems.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderTeacherDifferentiation() {
+        return `
+        <div class="space-y-4">
+            <div class="bg-green-50 rounded-xl p-5">
+                <h3 class="font-bold text-green-800 text-lg mb-3">🌱 Support Level Modifications</h3>
+                <ul class="text-sm text-gray-700 space-y-2">
+                    <li>✅ Reduced number range (0-20 or 0-50)</li>
+                    <li>✅ Fewer numbers to compare (3 instead of 4-5)</li>
+                    <li>✅ Visual hints and strategy reminders displayed</li>
+                    <li>✅ No time pressure (extended or no timer)</li>
+                    <li>✅ Larger touch targets for motor impairments</li>
+                    <li>✅ Step-by-step scaffolding with partial credit</li>
+                    <li>✅ Number line always visible as reference</li>
+                </ul>
+            </div>
+            
+            <div class="bg-blue-50 rounded-xl p-5">
+                <h3 class="font-bold text-blue-800 text-lg mb-3">📚 Standard Level</h3>
+                <ul class="text-sm text-gray-700 space-y-2">
+                    <li>✅ Grade-appropriate number ranges (0-100, 0-1000)</li>
+                    <li>✅ Standard number of choices (4 options)</li>
+                    <li>✅ Moderate time limits</li>
+                    <li>✅ Mixed problem types within games</li>
+                </ul>
+            </div>
+            
+            <div class="bg-purple-50 rounded-xl p-5">
+                <h3 class="font-bold text-purple-800 text-lg mb-3">🚀 Challenge/Extension</h3>
+                <ul class="text-sm text-gray-700 space-y-2">
+                    <li>✅ Extended number ranges (up to 10,000)</li>
+                    <li>✅ More numbers to compare/order (5+ numbers)</li>
+                    <li>✅ Includes equal comparisons (tricky!)</li>
+                    <li>✅ Multi-step reasoning problems</li>
+                    <li>✅ Students create their own problems</li>
+                    <li>✅ Explain reasoning in writing</li>
+                    <li>✅ Error analysis: find the mistake</li>
+                </ul>
+            </div>
+            
+            <div class="bg-amber-50 rounded-xl p-5">
+                <h3 class="font-bold text-amber-800 text-lg mb-3">♿ Accessibility & ELL Supports</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">For ELLs:</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Visual-heavy interface with minimal text</li>
+                            <li>• Number symbols are universal</li>
+                            <li>• Color-coded answer choices</li>
+                            <li>• Vocabulary bank available (greater, less, equal)</li>
+                            <li>• Sentence frames: "___ is greater than ___"</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">For IEPs/Motor:</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Large touch targets (min 48px)</li>
+                            <li>• No drag-and-drop required (tap-based)</li>
+                            <li>• Keyboard navigation support</li>
+                            <li>• High contrast mode available</li>
+                            <li>• Extended time options</li>
+                            <li>• Reduced response options if needed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderTeacherAssessment() {
+        return `
+        <div class="space-y-4">
+            <div class="bg-indigo-50 rounded-xl p-5">
+                <h3 class="font-bold text-indigo-800 text-lg mb-3">📊 Formative Assessment</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">In-Game Data</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Accuracy rate per game type</li>
+                            <li>• Response time patterns</li>
+                            <li>• Streak data (consistency indicator)</li>
+                            <li>• Difficulty level progression</li>
+                            <li>• Error patterns (which types are missed)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">Quick Checks</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Thumbs up/down during whole-class play</li>
+                            <li>• Whiteboard responses after each round</li>
+                            <li>• Partner discussion observations</li>
+                            <li>• "Show me" with number cards</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 rounded-xl p-5">
+                <h3 class="font-bold text-green-800 text-lg mb-3">🎫 Exit Ticket Template</h3>
+                <div class="bg-white rounded-lg p-4 border">
+                    <p class="font-bold text-sm text-gray-700 mb-3">Name: ____________ Date: _______</p>
+                    <div class="space-y-3 text-sm">
+                        <p>1. Circle the correct symbol: 345 ___ 354 (&lt; / &gt; / =)</p>
+                        <p>2. Which is greatest? &nbsp; 78 &nbsp; 87 &nbsp; 72 &nbsp; 82</p>
+                        <p>3. Put in order (least to greatest): 45, 12, 89, 56</p>
+                        <p>4. How many does this tally show? (show 13 tally marks)</p>
+                        <p>5. What digit is in the tens place of 624?</p>
+                    </div>
+                    <div class="mt-3 pt-3 border-t">
+                        <p class="text-xs text-gray-500"><strong>Answer Key:</strong> 1) &lt;  2) 87  3) 12, 45, 56, 89  4) 13  5) 2</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-amber-50 rounded-xl p-5">
+                <h3 class="font-bold text-amber-800 text-lg mb-3">📋 Rubric</h3>
+                <div class="bg-white rounded-lg overflow-hidden">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-2 text-left">Skill</th>
+                                <th class="p-2 text-center">Beginning (1)</th>
+                                <th class="p-2 text-center">Developing (2)</th>
+                                <th class="p-2 text-center">Proficient (3)</th>
+                                <th class="p-2 text-center">Exceeds (4)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-t">
+                                <td class="p-2 font-bold">Comparing</td>
+                                <td class="p-2 text-center">Confuses symbols</td>
+                                <td class="p-2 text-center">Some accuracy with 2-digit</td>
+                                <td class="p-2 text-center">Accurate with 3-digit</td>
+                                <td class="p-2 text-center">Accurate with 4+ digit, explains reasoning</td>
+                            </tr>
+                            <tr class="border-t bg-gray-50">
+                                <td class="p-2 font-bold">Ordering</td>
+                                <td class="p-2 text-center">Cannot order 3 numbers</td>
+                                <td class="p-2 text-center">Orders 3 numbers correctly</td>
+                                <td class="p-2 text-center">Orders 4-5 numbers correctly</td>
+                                <td class="p-2 text-center">Orders quickly, handles mixed ranges</td>
+                            </tr>
+                            <tr class="border-t">
+                                <td class="p-2 font-bold">Tallies</td>
+                                <td class="p-2 text-center">Counts individually</td>
+                                <td class="p-2 text-center">Reads tallies to 10</td>
+                                <td class="p-2 text-center">Reads/creates tallies to 25</td>
+                                <td class="p-2 text-center">Creates tallies to 50+, connects to graphs</td>
+                            </tr>
+                            <tr class="border-t bg-gray-50">
+                                <td class="p-2 font-bold">Number Line</td>
+                                <td class="p-2 text-center">Cannot locate numbers</td>
+                                <td class="p-2 text-center">Locates on 0-20 line</td>
+                                <td class="p-2 text-center">Locates on 0-1000 line</td>
+                                <td class="p-2 text-center">Estimates precisely, creates own scales</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderTeacherSamples() {
+        return `
+        <div class="space-y-4">
+            <h3 class="font-bold text-gray-800 text-lg">📝 6 Sample Problems with Solutions</h3>
+            
+            <div class="bg-white rounded-xl p-4 border-2 border-gray-100">
+                <div class="flex items-start gap-3">
+                    <span class="bg-blue-100 text-blue-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm flex-shrink-0">1</span>
+                    <div>
+                        <p class="font-bold text-gray-700">Compare: 456 ___ 465</p>
+                        <p class="text-sm text-gray-500 mt-1"><strong>Game:</strong> Compare It! | <strong>Standard:</strong> 3.NBT.A.3</p>
+                        <p class="text-sm text-green-600 mt-1"><strong>Solution:</strong> 456 < 465. Compare hundreds (4=4), then tens (5<6). Since 5 tens < 6 tens, 456 is less.</p>
+                        <p class="text-xs text-gray-400"><strong>Common Error:</strong> Students may look at the last digit (6>5) and say 456>465. Remind them to compare from left to right.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 border-2 border-gray-100">
+                <div class="flex items-start gap-3">
+                    <span class="bg-amber-100 text-amber-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm flex-shrink-0">2</span>
+                    <div>
+                        <p class="font-bold text-gray-700">Which is greatest? 234, 243, 324, 239</p>
+                        <p class="text-sm text-gray-500 mt-1"><strong>Game:</strong> Greatest & Smallest | <strong>Standard:</strong> 3.NBT.A.3</p>
+                        <p class="text-sm text-green-600 mt-1"><strong>Solution:</strong> 324 is greatest. Compare hundreds: 3>2, so 324 wins immediately.</p>
+                        <p class="text-xs text-gray-400"><strong>Teaching Tip:</strong> Ask "Did you need to look at the tens or ones? Why not?" to reinforce place value hierarchy.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 border-2 border-gray-100">
+                <div class="flex items-start gap-3">
+                    <span class="bg-green-100 text-green-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm flex-shrink-0">3</span>
+                    <div>
+                        <p class="font-bold text-gray-700">Order from least to greatest: 78, 45, 92, 61, 83</p>
+                        <p class="text-sm text-gray-500 mt-1"><strong>Game:</strong> Order Up! | <strong>Standard:</strong> 3.NBT.A.3</p>
+                        <p class="text-sm text-green-600 mt-1"><strong>Solution:</strong> 45, 61, 78, 83, 92. Compare tens digits: 4<6<7<8<9.</p>
+                        <p class="text-xs text-gray-400"><strong>Strategy:</strong> Students can circle the tens digit of each number to make comparison easier.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 border-2 border-gray-100">
+                <div class="flex items-start gap-3">
+                    <span class="bg-purple-100 text-purple-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm flex-shrink-0">4</span>
+                    <div>
+                        <p class="font-bold text-gray-700">Plot 350 on a number line from 0 to 1,000</p>
+                        <p class="text-sm text-gray-500 mt-1"><strong>Game:</strong> Number Line | <strong>Standard:</strong> 3.NBT.A.1</p>
+                        <p class="text-sm text-green-600 mt-1"><strong>Solution:</strong> 350 goes slightly past the 1/3 mark (between 300 and 400, closer to the middle).</p>
+                        <p class="text-xs text-gray-400"><strong>Discussion:</strong> "Is 350 closer to 300 or 400? How do you know?" (Equidistant! Good for rounding discussion.)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 border-2 border-gray-100">
+                <div class="flex items-start gap-3">
+                    <span class="bg-pink-100 text-pink-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm flex-shrink-0">5</span>
+                    <div>
+                        <p class="font-bold text-gray-700">Count the tally marks: |||| &nbsp; |||| &nbsp; || (2 groups of 5 + 2)</p>
+                        <p class="text-sm text-gray-500 mt-1"><strong>Game:</strong> Tally Time | <strong>Standard:</strong> 3.MD.B.3</p>
+                        <p class="text-sm text-green-600 mt-1"><strong>Solution:</strong> 12. Count by 5s: 5, 10, then add 2 more = 12.</p>
+                        <p class="text-xs text-gray-400"><strong>Connection:</strong> "How does counting by 5s with tallies help us count faster than counting by 1s?"</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 border-2 border-gray-100">
+                <div class="flex items-start gap-3">
+                    <span class="bg-teal-100 text-teal-700 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm flex-shrink-0">6</span>
+                    <div>
+                        <p class="font-bold text-gray-700">What digit is in the hundreds place of 847?</p>
+                        <p class="text-sm text-gray-500 mt-1"><strong>Game:</strong> Place Value Pro | <strong>Standard:</strong> 3.NBT.A.1</p>
+                        <p class="text-sm text-green-600 mt-1"><strong>Solution:</strong> 8. The number 847 = 8 hundreds + 4 tens + 7 ones.</p>
+                        <p class="text-xs text-gray-400"><strong>Extension:</strong> "What is the VALUE of that digit?" (800) vs. "What is the digit?" (8). Important distinction!</p>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderTeacherManagement() {
+        return `
+        <div class="space-y-4">
+            <div class="bg-blue-50 rounded-xl p-5">
+                <h3 class="font-bold text-blue-800 text-lg mb-3">🏫 Classroom Management Tips</h3>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">📱 Device Management</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Assign specific devices to students to avoid conflicts</li>
+                            <li>• Use a timer visible to all students for rotation management</li>
+                            <li>• Have a "tech buddy" system: one navigates, one records answers</li>
+                            <li>• Pre-load the game URL on all devices before class</li>
+                            <li>• Keep backup paper materials for tech failures</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">🔊 Noise Management</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Headphones for individual/center play</li>
+                            <li>• "Voice level 1" (whisper) for partner work</li>
+                            <li>• Use a signal (chime, hand raise) to get whole-class attention</li>
+                            <li>• Celebrate with "silent cheers" (jazz hands) during testing</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">⏰ Timing Suggestions</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• <strong>Warm-up (5 min):</strong> Quick whole-class comparison on board</li>
+                            <li>• <strong>Main activity (15-20 min):</strong> Game play in chosen format</li>
+                            <li>• <strong>Wrap-up (5 min):</strong> Exit ticket or share-out</li>
+                            <li>• <strong>Total lesson:</strong> 25-30 minutes</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">🎯 Engagement Strategies</h4>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Start with a "Math Mystery" - show a wrong answer, ask what went wrong</li>
+                            <li>• Use student names in problems: "Is Sarah's score of 456 > or < Jake's 465?"</li>
+                            <li>• Create class leaderboard (optional - focus on personal growth)</li>
+                            <li>• "Beat the Teacher" mode - students try to stump the teacher</li>
+                            <li>• Weekly "Math Master" certificates for improvement (not just highest score)</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-gray-700 mb-2">📅 Weekly Schedule Suggestion</h4>
+                        <div class="text-xs text-gray-600">
+                            <p><strong>Monday:</strong> Introduce new game/skill (whole class)</p>
+                            <p><strong>Tuesday:</strong> Partner practice with guided worksheet</p>
+                            <p><strong>Wednesday:</strong> Small group rotation (digital center)</p>
+                            <p><strong>Thursday:</strong> Independent practice + challenge problems</p>
+                            <p><strong>Friday:</strong> Assessment (exit ticket) + celebration</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 rounded-xl p-5">
+                <h3 class="font-bold text-green-800 text-lg mb-3">📣 Teacher Script Examples</h3>
+                <div class="space-y-3">
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-green-700 mb-2">Introducing Comparison:</h4>
+                        <p class="text-xs text-gray-600 italic">"Today we're going to be number detectives! Our job is to figure out which number is bigger, smaller, or if they're equal. Who can tell me - if I have 45 candies and my friend has 54 candies, who has MORE? How do you know? That's right - we look at the tens place first! 5 tens is more than 4 tens. Let's practice with our alligator mouths - the alligator always wants to eat the BIGGER number!"</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-green-700 mb-2">During Gameplay:</h4>
+                        <p class="text-xs text-gray-600 italic">"I see Marcus got that one right! Marcus, can you tell us HOW you knew 678 was bigger than 687? ... Great strategy! He looked at the hundreds - both 6. Then the tens - 7 vs 8. 8 is bigger, so 687 wins! Give Marcus a silent high-five!"</p>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 class="font-bold text-sm text-green-700 mb-2">Closing:</h4>
+                        <p class="text-xs text-gray-600 italic">"Math Masters, before we finish, turn to your partner and tell them ONE thing you learned today about comparing numbers. ... Who wants to share what their partner said? ... Excellent! Remember, when comparing big numbers, always start from the LEFT - the biggest place value first!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    function renderPrintables() {
+        return `
+        <div class="min-h-screen p-4 md:p-8">
+            <div class="max-w-4xl mx-auto">
+                <button onclick="goHome()" class="text-white/80 hover:text-white mb-4 inline-block font-bold no-print">← Back to Home</button>
+                
+                <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 mb-6">
+                    <div class="flex items-center justify-between mb-6 no-print">
+                        <div>
+                            <h2 class="title-font text-3xl text-gray-800">🖨️ Printables & Materials</h2>
+                            <p class="text-gray-500">Ready-to-use classroom materials</p>
+                        </div>
+                        <button onclick="window.print()" class="btn-primary text-white px-6 py-3 rounded-xl font-bold">
+                            🖨️ Print All
+                        </button>
+                    </div>
+                    
+                    <!-- Printable Card Set -->
+                    <div class="printable mb-8 page-break">
+                        <h3 class="title-font text-2xl text-gray-800 mb-4 border-b pb-2">📇 Comparison Cards (Cut & Use)</h3>
+                        <div class="grid grid-cols-4 gap-2 mb-4">
+                            ${Array.from({length: 16}, () => {
+                                const n = randInt(10, 999);
+                                return `<div class="border-2 border-gray-300 rounded-lg p-3 text-center">
+                                    <span class="title-font text-2xl">${n}</span>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                        <p class="text-xs text-gray-400">Instructions: Cut out cards. Use for pair comparison activities, sorting, or number line placement.</p>
+                    </div>
+                    
+                    <!-- Tally Sheet -->
+                    <div class="printable mb-8">
+                        <h3 class="title-font text-2xl text-gray-800 mb-4 border-b pb-2">📝 Tally Practice Sheet</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            ${Array.from({length: 10}, (_, i) => {
+                                const n = randInt(5, 30);
+                                return `<div class="border rounded-lg p-3">
+                                    <p class="font-bold text-sm">Problem ${i+1}: Make tally marks for <strong>${n}</strong></p>
+                                    <div class="h-12 border-b border-dashed mt-2"></div>
+                                    <p class="text-xs text-gray-400 mt-1">Answer: ____</p>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Number Line Templates -->
+                    <div class="printable mb-8">
+                        <h3 class="title-font text-2xl text-gray-800 mb-4 border-b pb-2">📏 Number Line Templates</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <p class="font-bold text-sm mb-2">Number Line 0-100 (by 10s):</p>
+                                <div class="relative h-8 border-t-2 border-gray-800 mx-4">
+                                    ${Array.from({length: 11}, (_, i) => `
+                                        <div class="absolute" style="left: ${i*10}%">
+                                            <div class="w-0.5 h-3 bg-gray-800 -mt-1"></div>
+                                            <span class="text-xs absolute -top-5 -translate-x-1/2">${i*10}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm mb-2">Number Line 0-1000 (by 100s):</p>
+                                <div class="relative h-8 border-t-2 border-gray-800 mx-4">
+                                    ${Array.from({length: 11}, (_, i) => `
+                                        <div class="absolute" style="left: ${i*10}%">
+                                            <div class="w-0.5 h-3 bg-gray-800 -mt-1"></div>
+                                            <span class="text-xs absolute -top-5 -translate-x-1/2">${i*100}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm mb-2">Blank Number Line (for student use):</p>
+                                <div class="relative h-8 border-t-2 border-gray-800 mx-4">
+                                    ${Array.from({length: 11}, (_, i) => `
+                                        <div class="absolute" style="left: ${i*10}%">
+                                            <div class="w-0.5 h-3 bg-gray-800 -mt-1"></div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Answer Key -->
+                    <div class="printable mb-8">
+                        <h3 class="title-font text-2xl text-gray-800 mb-4 border-b pb-2">🔑 Answer Keys</h3>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h4 class="font-bold text-sm mb-2">Exit Ticket Answers:</h4>
+                            <ol class="text-sm space-y-1 list-decimal list-inside">
+                                <li>345 <strong>&lt;</strong> 354 (compare tens: 4 < 5)</li>
+                                <li><strong>87</strong> is greatest (8 tens > 7 tens)</li>
+                                <li><strong>12, 45, 56, 89</strong> (ordered by tens digit)</li>
+                                <li><strong>13</strong> (2 groups of 5 + 3 = 13)</li>
+                                <li><strong>2</strong> (6<strong>2</strong>4 - the 2 is in the tens place)</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <!-- Visual Examples -->
+                    <div class="printable mb-8">
+                        <h3 class="title-font text-2xl text-gray-800 mb-4 border-b pb-2">👁️ Visual Examples (Anchor Chart)</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="border rounded-lg p-4">
+                                <h4 class="font-bold text-sm mb-2">Comparing Numbers:</h4>
+                                <p class="text-lg text-center my-2">234 <strong>&lt;</strong> 324</p>
+                                <p class="text-xs text-gray-500">Compare hundreds: 2 < 3, so 234 < 324</p>
+                                <div class="mt-2 text-center text-2xl">🐊</div>
+                                <p class="text-xs text-center text-gray-500">"The alligator eats the bigger number!"</p>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <h4 class="font-bold text-sm mb-2">Place Value:</h4>
+                                <div class="flex justify-center gap-1 my-2">
+                                    <div class="border rounded px-2 py-1 text-center">
+                                        <div class="text-lg font-bold">5</div>
+                                        <div class="text-xs">hundreds</div>
+                                    </div>
+                                    <div class="border rounded px-2 py-1 text-center">
+                                        <div class="text-lg font-bold">3</div>
+                                        <div class="text-xs">tens</div>
+                                    </div>
+                                    <div class="border rounded px-2 py-1 text-center">
+                                        <div class="text-lg font-bold">7</div>
+                                        <div class="text-xs">ones</div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 text-center">537 = 500 + 30 + 7</p>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <h4 class="font-bold text-sm mb-2">Tally Marks:</h4>
+                                <div class="flex items-end gap-3 my-2 justify-center">
+                                    <div class="flex gap-0.5 relative">
+                                        <div class="w-1 h-6 bg-gray-800"></div>
+                                        <div class="w-1 h-6 bg-gray-800"></div>
+                                        <div class="w-1 h-6 bg-gray-800"></div>
+                                        <div class="w-1 h-6 bg-gray-800"></div>
+                                        <div class="absolute w-6 h-0.5 bg-gray-800 top-1/2 -rotate-12"></div>
+                                    </div>
+                                    <div class="flex gap-0.5">
+                                        <div class="w-1 h-6 bg-gray-800"></div>
+                                        <div class="w-1 h-6 bg-gray-800"></div>
+                                        <div class="w-1 h-6 bg-gray-800"></div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 text-center">= 5 + 3 = 8</p>
+                            </div>
+                            <div class="border rounded-lg p-4">
+                                <h4 class="font-bold text-sm mb-2">Number Line:</h4>
+                                <div class="relative h-4 border-t-2 border-gray-800 mx-2 my-4">
+                                    ${[0, 25, 50, 75, 100].map(v => `
+                                        <div class="absolute" style="left: ${v}%">
+                                            <div class="w-0.5 h-2 bg-gray-800 -mt-1"></div>
+                                            <span class="text-xs absolute -bottom-4 -translate-x-1/2">${v}</span>
+                                        </div>
+                                    `).join('')}
+                                    <div class="absolute top-0" style="left: 65%">
+                                        <div class="text-lg">📍</div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 text-center mt-4">📍 is at approximately 65</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+    
+    // ==================== HELPER FUNCTIONS FOR OPTIONS ====================
+    function generateTallyOptions(correct) {
+        const options = new Set([correct]);
+        while (options.size < 4) {
+            const offset = randInt(-5, 5);
+            const opt = correct + offset;
+            if (opt > 0 && opt !== correct) options.add(opt);
+        }
+        return shuffle([...options]);
+    }
+    
+    function generateMissingOptions(correct, step) {
+        const options = new Set([correct]);
+        while (options.size < 4) {
+            const offset = randInt(-3, 3) * step;
+            const opt = correct + offset;
+            if (opt > 0 && opt !== correct) options.add(opt);
+        }
+        return shuffle([...options]);
+    }
+    
+    // ==================== GAME LOGIC ====================
+    function setStudentName() {
+        const input = document.getElementById('studentNameInput');
+        if (input && input.value.trim()) {
+            state.studentName = input.value.trim();
+            audio.init();
+            audio.click();
+            render();
+        }
+    }
+    
+    function selectGame(gameId) {
+        audio.init();
+        audio.click();
+        state.currentGame = gameId;
+        state.currentScreen = 'setup';
+        render();
+    }
+    
+    function setDifficulty(level) {
+        state.difficulty = level;
+        audio.click();
+        render();
+    }
+    
+    function setRange(range) {
+        state.numberRange = range;
+        audio.click();
+        render();
+    }
+    
+    function startGame() {
+        audio.init();
+        audio.click();
+        state.currentScreen = 'game';
+        state.score = 0;
+        state.streak = 0;
+        state.questionIndex = 0;
+        state.correctAnswers = 0;
+        state.bestStreak = 0;
+        nextQuestion();
+    }
+    
+    function nextQuestion() {
+        if (state.questionIndex >= state.totalQuestions) {
+            endGame();
+            return;
+        }
+        
+        const game = GAMES[state.currentGame];
+        state.currentQuestion = game.generate();
+        render();
+    }
+    
+    function answerComparison(symbol) {
+        const correct = state.currentQuestion.correct === symbol;
+        handleAnswer(correct);
+    }
+    
+    function answerMultiple(num) {
+        const correct = state.currentQuestion.correct === num;
+        handleAnswer(correct);
+    }
+    
+    function answerNumberLine(num) {
+        const correct = state.currentQuestion.correct === num;
+        handleAnswer(correct);
+    }
+    
+    function answerTally(num) {
+        const correct = state.currentQuestion.correct === num;
+        handleAnswer(correct);
+    }
+    
+    function answerPlaceValue(num) {
+        const correct = state.currentQuestion.correct === num;
+        handleAnswer(correct);
+    }
+    
+    function answerMissing(num) {
+        const correct = state.currentQuestion.correct === num;
+        handleAnswer(correct);
+    }
+    
+    // Ordering game state
+    let orderSelections = [];
+    
+    function selectOrderNumber(num, btn) {
+        audio.click();
+        orderSelections.push(num);
+        btn.disabled = true;
+        btn.classList.add('opacity-30');
+        btn.style.pointerEvents = 'none';
+        
+        // Update slot display
+        const slotIdx = orderSelections.length - 1;
+        const slot = document.getElementById(`slot-${slotIdx}`);
+        if (slot) {
+            slot.textContent = num.toLocaleString();
+            slot.classList.remove('border-gray-300', 'text-gray-300');
+            slot.classList.add('border-green-500', 'text-green-700', 'bg-green-50', 'font-bold');
+        }
+        
+        // Check if all selected
+        if (orderSelections.length === state.currentQuestion.numbers.length) {
+            const correct = JSON.stringify(orderSelections) === JSON.stringify(state.currentQuestion.correct);
+            setTimeout(() => handleAnswer(correct), 300);
+        }
+    }
+    
+    function resetOrder() {
+        orderSelections = [];
+        audio.click();
+        render();
+    }
+    
+    // Tally create state
+    let tallyCreated = 0;
+    
+    function addTallyMark() {
+        audio.click();
+        tallyCreated++;
+        updateTallyDisplay();
+    }
+    
+    function removeTallyMark() {
+        audio.click();
+        if (tallyCreated > 0) tallyCreated--;
+        updateTallyDisplay();
+    }
+    
+    function updateTallyDisplay() {
+        const area = document.getElementById('tallyArea');
+        const countEl = document.getElementById('tallyCount');
+        if (!area || !countEl) return;
+        
+        countEl.textContent = tallyCreated;
+        
+        const groups = Math.floor(tallyCreated / 5);
+        const remainder = tallyCreated % 5;
+        
+        let html = '';
+        for (let g = 0; g < groups; g++) {
+            html += '<div class="flex items-end gap-0.5 relative p-1">';
+            for (let i = 0; i < 4; i++) {
+                html += '<div class="w-1.5 h-8 bg-gray-800 rounded-sm"></div>';
+            }
+            html += '<div class="absolute inset-0 flex items-center justify-center"><div class="w-8 h-1 bg-gray-800 rounded-sm transform -rotate-12"></div></div>';
+            html += '</div>';
+        }
+        if (remainder > 0) {
+            html += '<div class="flex items-end gap-0.5 p-1">';
+            for (let i = 0; i < remainder; i++) {
+                html += '<div class="w-1.5 h-8 bg-gray-800 rounded-sm"></div>';
+            }
+            html += '</div>';
+        }
+        
+        area.innerHTML = html || '<span class="text-gray-300 text-sm">Tap "Add Mark" to create tally marks</span>';
+    }
+    
+    function checkTallyCreate() {
+        const correct = tallyCreated === state.currentQuestion.correct;
+        handleAnswer(correct);
+    }
+    
+    function handleAnswer(correct) {
+        state.questionsAnswered++;
+        
+        if (correct) {
+            state.correctAnswers++;
+            state.streak++;
+            if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+            
+            let points = 10;
+            if (state.streak > 1) points += (state.streak - 1) * 5;
+            state.score += points;
+            
+            audio.correct();
+            showFeedback(true, points);
+        } else {
+            state.streak = 0;
+            audio.wrong();
+            showFeedback(false, 0);
+        }
+        
+        state.questionIndex++;
+        
+        setTimeout(() => {
+            orderSelections = [];
+            tallyCreated = 0;
+            nextQuestion();
+        }, 1500);
+    }
+    
+    function showFeedback(correct, points) {
+        const area = document.getElementById('feedbackArea');
+        if (!area) return;
+        
+        const q = state.currentQuestion;
+        
+        if (correct) {
+            area.className = 'bg-green-50 border-2 border-green-200 rounded-2xl p-4 slide-up';
+            area.innerHTML = `
+                <div class="flex items-center justify-center gap-3">
+                    <span class="text-3xl">✅</span>
+                    <div>
+                        <p class="font-bold text-green-700">Correct! +${points} points</p>
+                        ${state.streak > 1 ? `<p class="text-sm text-green-600">🔥 ${state.streak} in a row!</p>` : ''}
+                    </div>
+                </div>`;
+            if (state.streak >= 5) showConfetti();
+        } else {
+            const correctAnswer = getCorrectAnswerDisplay(q);
+            area.className = 'bg-red-50 border-2 border-red-200 rounded-2xl p-4 slide-up';
+            area.innerHTML = `
+                <div class="flex items-center justify-center gap-3">
+                    <span class="text-3xl">❌</span>
+                    <div>
+                        <p class="font-bold text-red-700">Not quite!</p>
+                        <p class="text-sm text-red-600">The answer was: <strong>${correctAnswer}</strong></p>
+                    </div>
+                </div>`;
+        }
+        
+        area.classList.remove('hidden');
+    }
+    
+    function getCorrectAnswerDisplay(q) {
+        switch(q.type) {
+            case 'comparison': return `${q.numA} ${q.correct} ${q.numB}`;
+            case 'greatest': case 'smallest': return q.correct.toLocaleString();
+            case 'orderAsc': case 'orderDesc': return q.correct.map(n => n.toLocaleString()).join(', ');
+            case 'numberLine': return q.correct.toLocaleString();
+            case 'tally': return q.correct;
+            case 'tallyCreate': return q.correct;
+            case 'placeValue': return q.correct;
+            case 'missingNumber': return q.correct.toLocaleString();
+            default: return q.correct;
+        }
+    }
+    
+    function endGame() {
+        audio.gameComplete();
+        showConfetti();
+        
+        if (!state.gamesCompleted.includes(state.currentGame)) {
+            state.gamesCompleted.push(state.currentGame);
+        }
+        state.totalScore += state.score;
+        state.currentScreen = 'results';
+        render();
+    }
+    
+    function restartGame() {
+        audio.click();
+        startGame();
+    }
+    
+    function goHome() {
+        audio.click();
+        state.currentScreen = 'home';
+        state.currentGame = null;
+        orderSelections = [];
+        tallyCreated = 0;
+        render();
+    }
+    
+    function confirmQuit() {
+        if (confirm('Are you sure you want to quit? Your progress will be lost.')) {
+            goHome();
+        }
+    }
+    
+    function toggleSound() {
+        state.soundEnabled = !state.soundEnabled;
+        audio.enabled = state.soundEnabled;
+        if (state.soundEnabled) {
+            audio.init();
+            audio.click();
+        }
+        render();
+    }
+    
+    function showTeacherPanel() {
+        audio.click();
+        state.currentScreen = 'teacher';
+        render();
+    }
+    
+    function showPrintables() {
+        audio.click();
+        state.currentScreen = 'printables';
+        render();
+    }
+    
+    function showTeacherTab(tab) {
+        audio.click();
+        
+        // Update tab styles
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${tab}`).classList.add('active');
+        
+        const content = document.getElementById('teacherContent');
+        switch(tab) {
+            case 'overview': content.innerHTML = renderTeacherOverview(); break;
+            case 'standards': content.innerHTML = renderTeacherStandards(); break;
+            case 'differentiation': content.innerHTML = renderTeacherDifferentiation(); break;
+            case 'assessment': content.innerHTML = renderTeacherAssessment(); break;
+            case 'samples': content.innerHTML = renderTeacherSamples(); break;
+            case 'management': content.innerHTML = renderTeacherManagement(); break;
+        }
+    }
+    
+    // ==================== KEYBOARD SUPPORT ====================
+    document.addEventListener('keydown', (e) => {
+        if (state.currentScreen !== 'game' || !state.currentQuestion) return;
+        
+        const q = state.currentQuestion;
+        
+        if (q.type === 'comparison') {
+            if (e.key === '<' || e.key === ',') answerComparison('<');
+            else if (e.key === '>' || e.key === '.') answerComparison('>');
+            else if (e.key === '=' || e.key === '-') answerComparison('=');
+        }
+    });
+    
+    // ==================== INIT ====================
+    render();
+    </script>
+</body>
+</html>
