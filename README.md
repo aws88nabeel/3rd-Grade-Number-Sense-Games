@@ -54,7 +54,6 @@ cd math-masters
 3. **Run the app:**
 Simply double-click the `index.html` file to open it in any modern web browser, or serve it via a local development server (e.g., Live Server in VS Code).
 
----
 
 ## 📐 Common Core Standards Alignment
 
