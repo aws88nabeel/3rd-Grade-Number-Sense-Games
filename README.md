@@ -1,6 +1,3 @@
-**Math Masters - 3rd Grade Number Sense Suite**
-
-
 # 🎮 Math Masters: 3rd Grade Number Sense Suite
 
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
@@ -10,6 +7,7 @@
 
 **Math Masters** is an interactive, gamified web application designed to help 3rd-grade students master essential number sense concepts. Built as a single-file, zero-dependency HTML application powered by Tailwind CSS and Vanilla JavaScript, it offers engaging mini-games, dynamic difficulty scaling, and a comprehensive **Teacher Panel** with print-ready classroom materials and Common Core alignment.
 
+---
 
 ## ✨ Features
 
@@ -32,30 +30,18 @@
 * Custom synthesized audio tones (using the Web Audio API) for correct answers, level-ups, and streak milestones.
 * Confetti animations, score tracking, streak counters, and performance star ratings.
 
-
+---
 
 ## 🚀 Quick Start / Installation
 
-Because this project is contained entirely within a single `index.html` file, no complex package manager, build step, or server setup is required!
+Because this project is contained entirely within a single `index.html` file, no complex package manager, build step, or server setup is required. Simply clone the repository using `git clone https://github.com/your-username/math-masters.git`, navigate into the project directory via `cd math-masters`, and double-click the `index.html` file to open it in any modern web browser or serve it via a local development server (such as Live Server in VS Code).
 
-1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/your-username/math-masters.git](https://github.com/your-username/math-masters.git)
-```
-
-2. **Navigate to the project directory:**
-```bash
-cd math-masters
-```
-
-3. **Run the app:**
-Simply double-click the `index.html` file to open it in any modern web browser, or serve it via a local development server (e.g., Live Server in VS Code).
-
+---
 
 ## 📐 Common Core Standards Alignment
 
 | Game Module | Target Skill | Common Core Standard |
-| --- | --- | --- |
+| :--- | :--- | :--- |
 | **Compare It! / Order Up!** | Comparing & ordering multi-digit whole numbers | `3.NBT.A.3` |
 | **Number Line / Place Value Pro** | Rounding & place value understanding | `3.NBT.A.1` |
 | **Tally Time** | Representing and interpreting scaled data sets | `3.MD.B.3` |
@@ -63,7 +49,6 @@ Simply double-click the `index.html` file to open it in any modern web browser, 
 ---
 
 ## 🖨️ Printables Included
-
 * **Comparison & Flash Cards:** Cut-and-use number sets for small groups.
 * **Tally Practice Sheets:** Structured exercises for counting and grouping.
 * **Number Line Templates:** Labeled and blank number lines ($0–100$ and $0–1,000$).
@@ -72,7 +57,6 @@ Simply double-click the `index.html` file to open it in any modern web browser, 
 ---
 
 ## 💡 Classroom Play Formats
-
 * **Digital Center Rotation:** 2–3 students per device with headphones.
 * **Pair Play ("Math Buddies"):** One student navigates while the other verifies and explains reasoning.
 * **Whole Class / Projector Mode:** Project onto a smartboard for group voting and math discussions.
@@ -80,7 +64,6 @@ Simply double-click the `index.html` file to open it in any modern web browser, 
 ---
 
 ## 🤝 Contributing
-
 Contributions, bug reports, and feature requests are welcome! Feel free to open an issue or submit a pull request.
 
 1. Fork the Project
@@ -92,9 +75,4 @@ Contributions, bug reports, and feature requests are welcome! Feel free to open 
 ---
 
 ## 📝 License
-
 Distributed under the **MIT License**. See `LICENSE` for more information.
-
-```
-
-```
