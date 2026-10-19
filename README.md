@@ -1,8 +1,6 @@
 **Math Masters - 3rd Grade Number Sense Suite**
 
----
 
-```markdown
 # 🎮 Math Masters: 3rd Grade Number Sense Suite
 
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
@@ -12,7 +10,6 @@
 
 **Math Masters** is an interactive, gamified web application designed to help 3rd-grade students master essential number sense concepts. Built as a single-file, zero-dependency HTML application powered by Tailwind CSS and Vanilla JavaScript, it offers engaging mini-games, dynamic difficulty scaling, and a comprehensive **Teacher Panel** with print-ready classroom materials and Common Core alignment.
 
----
 
 ## ✨ Features
 
@@ -35,7 +32,7 @@
 * Custom synthesized audio tones (using the Web Audio API) for correct answers, level-ups, and streak milestones.
 * Confetti animations, score tracking, streak counters, and performance star ratings.
 
----
+
 
 ## 🚀 Quick Start / Installation
 
