@@ -8,6 +8,7 @@
 **Math Masters** is an interactive, gamified web application designed to help 3rd-grade students master essential number sense concepts. Built as a single-file, zero-dependency HTML application powered by Tailwind CSS and Vanilla JavaScript, it offers engaging mini-games, dynamic difficulty scaling, and a comprehensive **Teacher Panel** with print-ready classroom materials and Common Core alignment.
 
 🌐 **[Play Live Demo](https://aws88nabeel.github.io/3rd-Grade-Number-Sense-Games/)**
+
 ---
 
 ## ✨ Features
